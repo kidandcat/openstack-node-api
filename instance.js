@@ -2,11 +2,14 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+
+
 //OPENSTACK
 const OSWrap = require('openstack-wrapper');
-const KURL = 'http://192.168.0.1:5000/v3';
+const KURL = 'http://192.168.1.1:5000/v3';
 const KUSER = 'admin';
-const KPASSWORD = '******';
+const KPASSWORD = '*********';
+
 
 //CONSTANTS
 const ENDPOINT = {
@@ -14,57 +17,65 @@ const ENDPOINT = {
     FLAVOR: '/type/',
     IMAGE: '/image/'
 }
+const VERB = {
+  LIST: 'list',
+  STATUS: 'status',
+  NEW: 'new',
+  REMOVE: 'remove',
+  REBOOT: 'reboot',
+  FORCEREBOOT: 'forceReboot',
+  LOG: 'log',
+  INFO: 'info',
+}
+
 
 //LIST
-router.get(ENDPOINT.INSTANCE + 'list' + '/', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.LIST + '/', (req, res, next) => {
     project().then(project => status(req, res, project)).error(err => error(req, res, err));
 });
 //STATUS
-router.get(ENDPOINT.INSTANCE + 'status' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.STATUS + '/:id', (req, res, next) => {
     project().then(project => status(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
 //CREATE
-router.get(ENDPOINT.INSTANCE + 'new' + '/:flavorRef/:imageRef/:name', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.NEW + '/:flavorRef/:imageRef/:name', (req, res, next) => {
     project().then(project => create(req, res, project, {server: req.params})).error(err => error(req, res, err));
 });
 //REMOVE
-router.get(ENDPOINT.INSTANCE + 'remove' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.REMOVE + '/:id', (req, res, next) => {
     project().then(project => remove(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
 //REBOOT
-router.get(ENDPOINT.INSTANCE + 'reboot' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.REBOOT + '/:id', (req, res, next) => {
     project().then(project => reboot(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
 //FORCE REBOOT
-router.get(ENDPOINT.INSTANCE + 'forceReboot' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.FORCEREBOOT + '/:id', (req, res, next) => {
     project().then(project => forceReboot(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
 //LOG
-router.get(ENDPOINT.INSTANCE + 'log' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.INSTANCE + VERB.LOG + '/:id', (req, res, next) => {
     project().then(project => getlog(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
-
 //LIST
-router.get(ENDPOINT.FLAVOR + 'list' + '/', (req, res, next) => {
+router.get(ENDPOINT.FLAVOR + VERB.LIST + '/', (req, res, next) => {
     project().then(project => flavorList(req, res, project)).error(err => error(req, res, err));
 });
 //INFO
-router.get(ENDPOINT.FLAVOR + 'info' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.FLAVOR + VERB.INFO + '/:id', (req, res, next) => {
     project().then(project => flavorInfo(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
-
 //LIST
-router.get(ENDPOINT.IMAGE + 'list' + '/', (req, res, next) => {
+router.get(ENDPOINT.IMAGE + VERB.LIST + '/', (req, res, next) => {
     project().then(project => imageList(req, res, project)).error(err => error(req, res, err));
 });
 //INFO
-router.get(ENDPOINT.IMAGE + 'info' + '/:id', (req, res, next) => {
+router.get(ENDPOINT.IMAGE + VERB.INFO + '/:id', (req, res, next) => {
     project().then(project => imageInfo(req, res, project, req.params.id)).error(err => error(req, res, err));
 });
 
 
 
-module.exports = router;
 
 
 function reboot(req, res, project, id) {
@@ -194,7 +205,7 @@ function project() {
     var error = function(c) {};
     //Promise
 
-    OSWrap.getSimpleProject(KUSER, KPASSWORD, '56e904d60a8f4a3ead0062bad6184815', KURL, function(err, proj) {
+    OSWrap.getSimpleProject(KUSER, KPASSWORD, '0000000000000000000000', KURL, function(err, proj) {
         if (err) {
             error(err);
         } else {
@@ -214,3 +225,6 @@ function project() {
         }
     };
 }
+
+
+module.exports = router;
